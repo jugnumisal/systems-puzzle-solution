@@ -23,11 +23,11 @@ def add_item():
 def success():
     results = []
  
-    qry = db_session.query(Items)
+    qry = db_session.query(items)
     results = qry.all()
 
     return str(results)
   
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001)

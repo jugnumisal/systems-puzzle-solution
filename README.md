@@ -72,4 +72,25 @@ While technologies like Kubernetes are quite powerful, they're likely overkill f
 # Solution
 The very first step that I did is, I cloned this repo to my local machine and tried running it using the above mentioned commands. When I opened the `localhost:8080` on my browser, there was no such page. Then, I started analysing the given sample code and soon I found out the first bug in the Dockerfile.
 
-1. On line 25 in the Dockerfile, the ports were exposed in the form `80:8080` which actually should be `8080:80`. In docker, the the first port number before the `:` is called the host port whereas the 2nd port number is called the container port. So when the exposed ports was `80:8080`, it actually exposed the 8080 port of the container to the port 80 on my local machine. Hence, I wasn't able to access the website on `localhost:8080` on my local machine. Instead, if I had used `localhost:80`, I would have been able to access the page. However, for the simplicity of this puzzle, we need to open the page on port 8080, I interchanged the values such that the port 80 of the nginx container gets exposed to the 8080 port of my local machine. Also, I exposed the port 80 of the nginx container to 8080 of my local machine because the default port of nginx container is 80.
+1. On line 25 in the Dockerfile, the ports were exposed in the form `80:8080` which actually should be `8080:80`. In docker, the the first port number before the `:` is called the host port whereas the 2nd port number is called the container port. So, when the exposed ports was `80:8080`, it actually exposed the 8080 port of the container to the port 80 on my local machine. There is nothing linked to the port 8080 of the nginx container and there is no port exposure on 8080 of my local machine. Hence, I wasn't able to access the website on `localhost:8080` on my local machine. Instead, if I had used `localhost:80`, I would have been able to access the page. However, for the simplicity of this puzzle, we need to open the page on port 8080, I interchanged the values such that the port 80 of the nginx container gets exposed to the 8080 port of my local machine. Also, I exposed the port 80 of the nginx container to 8080 of my local machine because the default port of nginx container is 80.
+
+2. Once I had the port exposure issue fixed, I ran the Dockerfile again. This time, the ports were exposed correctly as I was able to get the some output on my `localhost:8080`. But, it threw a Gateway error of 502 as below:
+<p align="center">
+  <img src="1.png">
+</p>
+
+* This gave me an assurity that the server side error means I have to solve an issue in the webpage code. I explored the web to make myself familiar with how Flask works and how to expose flask page on docker. The app.py page had all the necessary commands too display the required page on the webpage on `localhost:8080`. This didn't solve my prooblem as there was some error in retreiving the page onto the nginx server.
+* After a deep debugging of the flask app code, I found out that the app.run command in the last line of app.py file, the host-ip is mentioned as `0.0.0.0` which is localhost, but there is no port number added onto it. All I had to do is add the port number of the page to the ip-address and I would have the output of the page on `localhost:8080`. But adding port 8080 won't solve the problem here. The port 8080 is just the port that connects my local machine to the nginx docker. How this application works is the Flask app connects to the database and the nginx containers on their respective ports. The database container `db` is connected to the `flask` container and the `flask` container is connected to the `nginx` container.
+* So, it forms a network of A->B->C where A, B and C are `nginx`, `flask` and `postgres` respectively. What the app already did was, it connected all these 3 docker containers, but the nginx port had nothing to display as nothing was linked to it's port 80.
+* In order to resolve this, I added the port number of the flask container to the app.run command.
+`app.run(host='0.0.0.0', port=5001)`
+This exposed the flask container onto the nginx container, which in-turn was exposed on port 8080 of my local machine.
+
+* After making these changes, I recomposed the Dockerfile and this time I was successfully able to link all the containers together and I got the output.
+<p align="center">
+  <img src="2.png">
+</p>
+
+3. After entering the values, the page doesn't redirect to a new page with results because there is no html page designed in the app for the `/success` path. However, the app.py page does have the code to return the string of the input. I added the link to the submit button to call the `/success` function when the button is clicked. We can check the data stored in the db container by exposiing the port of the postgresql container and accessing it on local machine.
+
+The puzzle was a good brainstorming exercise for me and I believe that the sole purpose of this puzzle was to get the deep knowledge of how container networks work and how to interconnect them to make them act as one application. I thank Insight for such good puzzle that helped me understand the concepts of docker networking in-depth.
