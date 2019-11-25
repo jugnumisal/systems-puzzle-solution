@@ -1,3 +1,7 @@
+```diff
+- Please click [here](README.md#solution) for the solution explanation
+```
+
 # Insight DevOps Engineering Systems Puzzle
 
 ## Table of Contents
@@ -6,6 +10,7 @@
 3. [Puzzle details](README.md#puzzle-details)
 4. [Instructions to submit your solution](README.md#instructions-to-submit-your-solution)
 5. [FAQ](README.md#faq)
+6. [Solution](README.md#solution)
 
 # Understanding the puzzle
 
@@ -65,3 +70,7 @@ No, you should focus on the functionality. Your engineering team will bring on a
 ### Should I use orchestration tools like Kubernetes?
 While technologies like Kubernetes are quite powerful, they're likely overkill for the simple application in this puzzle. We recommend that you stick to Docker Compose for this puzzle.
 
+# Solution
+The very first step that I did is, I cloned this repo to my local machine and tried running it using the above mentioned commands. When I opened the `localhost:8080` on my browser, there was no such page. Then, I started analysing the given sample code and soon I found out the first bug in the Dockerfile.
+
+On line 25 in the Dockerfile, the ports were exposed in the form `80:8080` which actually should be `8080:80`. In docker, the the first port number before the `:` is called the host port whereas the 2nd port number is called the container port. So when the exposed ports was `80:8080`, it actually exposed the 8080 port of the container to the port 80 on my local machine. Hence, I wasn't able to access the website on `localhost:8080` on my local machine. Instead, if I had used `localhost:80`, I would have been able to access the page. However, for the simplicity of this puzzle, we need to open the page on port 8080, I interchanged the values such that the port 80 of the nginx container gets exposed to the 8080 port of my local machine. 
