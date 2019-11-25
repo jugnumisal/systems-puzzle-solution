@@ -97,4 +97,4 @@ This exposed the `flask` container onto the `nginx` container, which in-turn was
 
 The puzzle was a good brainstorming exercise for me and I believe that the sole purpose of this puzzle was to get the deep knowledge of how container networks work and how to interconnect them to make them act as one application. I thank Insight for such good puzzle that helped me understand the concepts of docker networking in-depth.
 
-### This is a solution for the [Systems Puzzle](https://github.com/InsightDataScience/systems-puzzle) by [Jugnu Misal](https://github.com/jugnumisal) attempted on 25 Nov 2019.
+### This is a solution for the [Systems Puzzle](https://github.com/InsightDataScience/systems-puzzle) by [Jugnu Misal](https://www.linkedin.com/in/jugnumisal/) attempted on 25 Nov 2019.
